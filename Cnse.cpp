@@ -1,6 +1,6 @@
 ﻿
 //Microsoft Visual Studio Solution File, Format Version 12.00
-//# Visual Studio Version 17
+// Visual Studio Version 17
 
 #include <iostream> // For standard input and output
 #include <fstream> // For file input and output
@@ -12,8 +12,8 @@ using namespace boost::asio; // Boost Asio namespace
 using ip::tcp; // TCP protocol namespace
 
 // Paths to certificate and private key files
-const char* certificate_file = "C:\\Users\\rrupa\\source\\repos\\Cn project\\certificate.crt";
-const char* private_key_file = "C:\\Users\\rrupa\\source\\repos\\Cn project\\private.key";
+const char* certificate_file = "certificate.crt";// edit to the path of the .crt
+const char* private_key_file = "private.key";//edit to the path of the .key
 
 // Function to authenticate user
 bool authenticateUser(const std::string& username, const std::string& password) {
