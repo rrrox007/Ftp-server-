@@ -7,13 +7,14 @@
 #include <boost/asio.hpp> // For Boost Asio library
 #include <boost/asio/ssl.hpp> // For Boost Asio SSL support
 #include <openssl/ssl.h> // For OpenSSL SSL support
+#include <set> // Include set container for storing connected client endpoints
 
 using namespace boost::asio; // Boost Asio namespace
 using ip::tcp; // TCP protocol namespace
 
 // Paths to certificate and private key files
-const char* certificate_file = "certificate.crt";// edit to the path of the .crt
-const char* private_key_file = "private.key";//edit to the path of the .key
+const char* certificate_file = "C:\\Users\\rrupa\\source\\repos\\Cn project\\certificate.crt";
+const char* private_key_file = "C:\\Users\\rrupa\\source\\repos\\Cn project\\private.key";
 
 // Function to authenticate user
 bool authenticateUser(const std::string& username, const std::string& password) {
@@ -174,10 +175,13 @@ private:
             [this, newSocket](const boost::system::error_code& error) { // Asynchronous callback for connection acceptance
                 if (!error) { // If no error occurred
                     auto endpoint = newSocket->next_layer().remote_endpoint(); // Get remote endpoint details
-                    std::cout << "Client connected from " << endpoint.address().to_string() << " on port " << endpoint.port() << "." << std::endl; // Print client connection details
-                    auto handler = std::make_shared<SSLClientHandler>(io_context_, std::move(*newSocket)); // Create a new SSL client handler
-                    handler->start(endpoint); // Start handling client
-                    clientHandlers_.push_back(handler); // Add handler to list
+                    if (connectedEndpoints_.find(endpoint) == connectedEndpoints_.end()) { // Check if endpoint is not already connected
+                        //std::cout << "Client connected from " << endpoint.address().to_string() << " on port " << endpoint.port() << "." << std::endl; // Print client connection details
+                        auto handler = std::make_shared<SSLClientHandler>(io_context_, std::move(*newSocket)); // Create a new SSL client handler
+                        handler->start(endpoint); // Start handling client
+                        clientHandlers_.push_back(handler); // Add handler to list
+                        connectedEndpoints_.insert(endpoint); // Insert the connected endpoint into the set
+                    }
                 }
                 else { // If error occurred during connection acceptance
                     std::cerr << "Accept error: " << error.message() << std::endl; // Print error message
@@ -190,6 +194,7 @@ private:
     ssl::context& context_; // SSL context for configuring SSL parameters
     tcp::acceptor acceptor_; // Acceptor for accepting incoming connections
     std::vector<SSLClientHandler::Ptr> clientHandlers_; // List of SSL client handlers
+    std::set<tcp::endpoint> connectedEndpoints_; // Set to store connected client endpoints
 };
 
 // Main function
