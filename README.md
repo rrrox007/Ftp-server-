@@ -1,0 +1,1 @@
+The Folowing code is a simple Secure File Transfer System (SFTS) which is a client-server application developed using C++ and Boost Asio library with SSL support. It allows users to securely transfer files between a client and a server over a TCP/IP connection.
